@@ -16,7 +16,7 @@ ps:
 	docker-compose -f compose/compose.yml ps
 
 login:
-	ssh root@localhost -p $(PORT) -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+	ssh ubuntu@localhost -p $(PORT) -i compose/id_rsa -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 
 login-master:
 	PORT=2200 make login
