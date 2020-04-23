@@ -1,19 +1,33 @@
 version: "3.5"
 
-x-template: &template
+x-template: &shared
   tty: true
   stdin_open: true
+
+x-node: &node
   build: .
 
 services:
   master:
-    <<: *template
+    <<: *shared
+    <<: *node
     ports: [ "2200:22" ]
 
   worker-1:
-    <<: *template
+    <<: *shared
+    <<: *node
     ports: [ "2201:22" ]
 
   worker-2:
-    <<: *template
+    <<: *shared
+    <<: *node
     ports: [ "2202:22" ]
+
+  ansible:
+    <<: *shared
+    image: williamyeh/ansible:1.9-alpine3
+    volumes:
+      - ./id_rsa:/root/.ssh/id_rsa:ro
+      - ../:/work
+    environment:
+      ANSIBLE_HOST_KEY_CHECKING: "False"

@@ -1,19 +1,23 @@
 .PHONY: \
 	build \
 	up down ps \
-	login login-master login-worker-1 login-worker-2
+	login login-master login-worker-1 login-worker-2 \
+	ping
+
+COMPOSE:=docker-compose --file compose/compose.yml
+ANSIBLE:=$(COMPOSE) run --rm --workdir /work/ansible ansible
 
 build:
-	docker-compose -f compose/compose.yml build
+	$(COMPOSE) build
 
 up:
-	docker-compose -f compose/compose.yml up --d
+	$(COMPOSE) up --detach
 
 down:
-	docker-compose -f compose/compose.yml down
+	$(COMPOSE) down
 
 ps:
-	docker-compose -f compose/compose.yml ps
+	$(COMPOSE) ps
 
 login:
 	ssh ubuntu@localhost -p $(PORT) -i compose/id_rsa -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
@@ -26,3 +30,8 @@ login-worker-1:
 
 login-worker-2:
 	PORT=2202 make login
+
+ping:
+	$(ANSIBLE) ansible all \
+		--inventory-file=inventory.ini \
+		--module-name ping
